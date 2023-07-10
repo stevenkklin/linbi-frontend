@@ -1,6 +1,6 @@
 import { listMyChartByPageUsingPOST } from '@/services/linbi/chartController';
 import { useModel } from '@umijs/max';
-import { Avatar, Card, Divider, List, message } from 'antd';
+import { Avatar, Card, Divider, List, message, Result } from 'antd';
 import Search from 'antd/es/input/Search';
 import ReactECharts from 'echarts-for-react';
 import React, { useEffect, useState } from 'react';
@@ -13,6 +13,8 @@ const MyChartPage: React.FC = () => {
   const initSearchParams = {
     current: 1,
     pageSize: 4,
+    sortField: 'createTime',
+    sortOrder: 'sortOrder',
   };
 
   const [searchParams, setSearchParams] = useState<API.ChartQueryRequest>({ ...initSearchParams });
@@ -33,9 +35,11 @@ const MyChartPage: React.FC = () => {
         // 隐藏图表title
         if (res.data.records) {
           res.data.records.forEach((data) => {
-            const titleOption = JSON.parse(data.genChart ?? '{}');
-            titleOption.title = undefined;
-            data.genChart = JSON.stringify(titleOption);
+            if (data.status === 'succeed') {
+              const titleOption = JSON.parse(data.genChart ?? '{}');
+              titleOption.title = undefined;
+              data.genChart = JSON.stringify(titleOption);
+            }
           });
         }
       } else {
@@ -99,13 +103,37 @@ const MyChartPage: React.FC = () => {
                 title={item.name}
                 description={item.charType ? '图表类型：' + item.charType : undefined}
               />
-              <Divider />
-              {'分析目标：' + item.goal}
-              <Divider />
-              <ReactECharts option={JSON.parse(item.genChart ?? '{}')} />
-              <Divider />
-              {'分析结果：' + item.genResult}
-              {/*{item.genChart }*/}
+              <>
+                {item.status === 'succeed' && (
+                  <>
+                    <Divider />
+                    {'分析目标：' + item.goal}
+                    <Divider />
+                    <ReactECharts option={JSON.parse(item.genChart ?? '{}')} />
+                    <Divider />
+                    {'分析结果：' + item.genResult}
+                  </>
+                )}
+                {item.status === 'wait' && (
+                  <>
+                    <Result
+                      status="warning"
+                      title="待生成图表"
+                      subTitle={item.execMessage ?? '当前图表生成队列繁忙，请耐心等候'}
+                    />
+                  </>
+                )}
+                {item.status === 'running' && (
+                  <>
+                    <Result status="info" title="图表生成中" subTitle={item.execMessage} />
+                  </>
+                )}
+                {item.status === 'failed' && (
+                  <>
+                    <Result status="error" title="图表生成失败" subTitle={item.execMessage} />
+                  </>
+                )}
+              </>
             </Card>
           </List.Item>
         )}
