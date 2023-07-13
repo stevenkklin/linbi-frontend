@@ -11,7 +11,7 @@ export default [
   { path: '/add_chart', name: '智能分析', icon: 'barChart', component: './AddChart' },
   {
     path: '/add_chart_async',
-    name: '智能分析（异步）',
+    name: '智能分析（异步,推荐）',
     icon: 'barChart',
     component: './AddChartAsync',
   },

@@ -1,4 +1,4 @@
-import { genChartByAiAsyncUsingPOST } from '@/services/linbi/chartController';
+import { genChartByAiAsyncMqUsingPOST } from '@/services/linbi/chartController';
 import { UploadOutlined } from '@ant-design/icons';
 import { Button, Card, Form, message, Select, Space, Upload } from 'antd';
 import { useForm } from 'antd/es/form/Form';
@@ -27,7 +27,8 @@ const AddChartAsync: React.FC = () => {
     }
     setSubmitting(true);
     try {
-      const res = await genChartByAiAsyncUsingPOST(params, {}, values.file.file.originFileObj);
+      // const res = await genChartByAiAsyncUsingPOST(params, {}, values.file.file.originFileObj);
+      const res = await genChartByAiAsyncMqUsingPOST(params, {}, values.file.file.originFileObj);
       if (!res.data) {
         message.error('分析失败');
       } else {
