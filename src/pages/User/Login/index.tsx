@@ -40,11 +40,24 @@ const Login: React.FC = () => {
   const fetchUserInfo = async () => {
     const userInfo = await getLoginUserUsingGET();
     if (userInfo) {
+      // 解构用户信息
+      // const {
+      //   userName = '新用户',
+      //   userAvatar = '/defaultAvatar.png'
+      // } = userInfo.data;
+
       flushSync(() => {
-        setInitialState((s) => ({
-          ...s,
-          currentUser: userInfo,
-        }));
+        setInitialState(() => {
+          const userName = userInfo.data.userName ?? '新用户';
+          const userAvatar = userInfo.data.userAvatar ?? '/defaultAvatar.png';
+          return {
+            currentUser: {
+              ...userInfo.data,
+              userName,
+              userAvatar,
+            },
+          };
+        });
       });
     }
   };
@@ -57,6 +70,7 @@ const Login: React.FC = () => {
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
+
         history.push(urlParams.get('redirect') || '/');
         return;
       } else {

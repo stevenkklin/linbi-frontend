@@ -99,7 +99,7 @@ const MyChartPage: React.FC = () => {
           <List.Item key={item.id}>
             <Card>
               <List.Item.Meta
-                avatar={<Avatar src={currentUser.userAvatar} />}
+                avatar={currentUser?.userAvatar && <Avatar src={currentUser.userAvatar} />}
                 title={item.name}
                 description={item.charType ? '图表类型：' + item.charType : undefined}
               />
